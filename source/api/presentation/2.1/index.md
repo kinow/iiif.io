@@ -7,7 +7,10 @@ tags: [specifications, presentation-api]
 major: 2
 minor: 1
 patch: 0
-pre: draft5
+pre: final
+redirect_from:
+  - /api/presentation/index.html
+  - /api/presentation/2/index.html
 ---
 
 ## Status of this Document
@@ -17,8 +20,6 @@ __This Version:__ {{ page.major }}.{{ page.minor }}.{{ page.patch }}{% if page.p
 __Latest Stable Version:__ [{{ site.presentation_api.latest.major }}.{{ site.presentation_api.latest.minor }}.{{ site.presentation_api.latest.patch }}][stable-version]
 
 __Previous Version:__ [2.0][prev-version]
-
-{% include beta.md %}
 
 **Editors**
 
@@ -63,7 +64,7 @@ The following are within the scope of the current document:
 
 The following are __not__ within scope:
 
-  * The discovery or selection of interesting digitized objects is not directly supported, however hooks to reference further resources are available.
+  * The discovery or selection of interesting digitized objects is not directly supported; however hooks to reference further resources are available.
   * Search within the object is not supported by the Presentation API; however this will be covered by a future IIIF specification.
 
 Note that in the following descriptions, "object" (or "physical object") is used to refer to a physical object that has been digitized or a born-digital compound object, and "resources" refer to the digital resources that are the result of that digitization or digital creation process.
@@ -147,7 +148,7 @@ An ordered list of canvases, and/or further ranges.  Ranges allow canvases, or p
 
 ##  3. Resource Properties
 
-This specification defines properties in five distinct areas. Most of the properties may be associated with any of the resource types, and may have more than one value.  The property relates to the resource that it is associated with, so a `description` property on a manifest is a description of the object, whereas a `description` property on a canvas is a description of that particular page or view of the object.
+This specification defines properties in five distinct areas. Most of the properties may be associated with any of the resource types described above, and may have more than one value.  The property relates to the resource that it is associated with, so a `description` property on a manifest is a description of the object, whereas a `description` property on a canvas is a description of that particular page or view of the object.
 
 The requirements for the use of the properties are summarized in [Appendix B][appendixB].
 
@@ -233,13 +234,15 @@ The type of the resource.  For the resource types defined by this specification,
 
  * All resource types _MUST_ have at least one type specified.
 
+This requirement applies only to the types described in [Section 2][type-overview]. Services, Thumbnails and other resources will have their own requirements.
+
 ##### format
 The specific media type (often called a MIME type) of a content resource, for example "image/jpeg". This is important for distinguishing text in XML from plain text, for example.
 
  * A content resource _MAY_ have exactly one format, and if so, it _MUST_ be the value of the `Content-Type` header returned when the resource is dereferenced.
  * Other resource types _MUST NOT_ have a format.
 
-_N.B._ This is different to the `formats` property in the [Image API][image-api], which gives the extension to use within that API.  It would be inappropriate to use in this case, as `format` can be used with any content resource, not just images.
+This is different to the `formats` property in the [Image API][image-api], which gives the extension to use within that API.  It would be inappropriate to use in this case, as `format` can be used with any content resource, not just images.
 
 ##### height
 The height of a canvas or image resource. For images, the value is in pixels. For canvases, the value does not have a unit. In combination with the width, it conveys an aspect ratio for the space in which content resources are located.
@@ -484,11 +487,11 @@ Recommended URI pattern:
 
 The manifest response contains sufficient information for the client to initialize itself and begin to display something quickly to the user. The manifest resource represents a single object and any intellectual work or works embodied within that object. In particular it includes the descriptive, rights and linking information for the object. It then embeds the sequence(s) of canvases that should be rendered to the user.
 
-The identifier in `@id` _MUST_ always be able to be dereferenced to retrieve the JSON description of the manifest, and thus _MUST_ use the http(s) URI scheme. 
+The identifier in `@id` _MUST_ always be able to be dereferenced to retrieve the JSON description of the manifest, and thus _MUST_ use the http(s) URI scheme.
 
 Along with the descriptive information, there is a `sequences` section, which is a list of JSON-LD objects. Each object describes a [Sequence][sequence], discussed in the next section, that represents the order of the parts of the work, each represented by a [Canvas][canvas].  The first such sequence _MUST_ be included within the manifest as well as optionally being available from its own URI. Subsequent sequences _MUST_ only be referenced with their identifier (`@id`), class (`@type`) and `label` and thus _MUST_ be dereferenced by clients in order to process them if the user selects to view that sequence.
 
-There _MAY_ also be a `stuctures` section listing one or more [Ranges][range] which describe additional structure of the content, such as might be rendered as a table of contents.
+There _MAY_ also be a `structures` section listing one or more [Ranges][range] which describe additional structure of the content, such as might be rendered as a table of contents.
 
 The example below includes only the manifest-level information, however actual implementations _MUST_ embed the first sequence, canvas and content information. It includes examples in the descriptive metadata of how to associate multiple entries with a single field and how to be explicit about the language of a particular entry.
 
@@ -643,7 +646,7 @@ The canvas represents an individual page or view and acts as a central point for
 
 Every canvas _MUST_ have a `label` to display, and a `height` and a `width` as integers. A canvas is a two-dimensional rectangular space with an aspect ratio that represents a single logical view of some part of the object, and the aspect ratio is given with the height and width properties. This allows resources to be associated with specific parts of the canvas, rather than the entire space. Content _MUST NOT_ be associated with space outside of the canvas's dimensions, such as at coordinates below 0,0 or greater than the height or width.
 
-It is _RECOMMENDED_ that if there is (at the time of implementation) a single image that depicts the page, then the dimensions of the image are used as the dimensions of the canvas for simplicity. If there are multiple full images, then the dimensions of the largest image should be used. If the largest image's dimensions are less than 1200 pixels on either edge, then the canvas's dimensions _SHOULD_ be double that of the image. Clients _MUST_ be aware that this is not always the case, such as in the examples presented, and instead _MUST_ always scale images into the space represented by the canvas.  The dimensions of the canvas _SHOULD_ be the same scale as the physical object, and thus images _SHOULD_ depict only the object.  This can be accomplished by cropping the image, or associating only a segment of the image with the canvas. The physical dimensions of the object may be available via a service, either embedded within the description or requiring an HTTP request to retrieve them.
+It is _RECOMMENDED_ that if there is (at the time of implementation) a single image that depicts the page, then the dimensions of the image are used as the dimensions of the canvas for simplicity. If there are multiple full images, then the dimensions of the largest image should be used. If the largest image's dimensions are less than 1200 pixels on either edge, then the canvas's dimensions _SHOULD_ be double those of the image. Clients _MUST_ be aware that this is not always the case, such as in the examples presented, and instead _MUST_ always scale images into the space represented by the canvas.  The dimensions of the canvas _SHOULD_ be the same scale as the physical object, and thus images _SHOULD_ depict only the object.  This can be accomplished by cropping the image, or associating only a segment of the image with the canvas. The physical dimensions of the object may be available via a service, either embedded within the description or requiring an HTTP request to retrieve them.
 
 Image resources, and only image resources, are included in the `images` property of the canvas. These are linked to the canvas via annotations, as described in [Image Resources][image-resources]. Other content, such as transcriptions, video, audio or commentary, is provided via external annotation lists referenced in the `otherContent` property, as described in [Annotation Lists][annotation-lists]. The value of both of these properties _MUST_ be a list, even if there is only one entry. Both are optional, as there may be no additional information associated with the canvas. Note that the items in the `otherContent` list may be either objects with an `@id` property or strings. In the case of a string, this is the URI of the annotation list and the type of "sc:AnnotationList" can be inferred.
 
@@ -699,7 +702,7 @@ If a [IIIF Image API][image-api] service is available for the image, then a link
 
 Although it seems redundant, the URI of the canvas _MUST_ be repeated in the `on` field of the Annotation. This is to ensure consistency with annotations that target only part of the resource, described in more detail below.
 
-Additional features of the [Open Annotation][openanno] data model _MAY_ also be used, such as selecting a segment of the canvas or content resource, or embedding the comment or transcription within the annotation. These additional features are described in the following section.  The use of advanced features sometimes results in situations where the resource is not an image, but instead a `SpecificResource`, a `Choice` or other non content object. Implementations should check the type of the resource and not assume that it is always an image. 
+Additional features of the [Open Annotation][openanno] data model _MAY_ also be used, such as selecting a segment of the canvas or content resource, or embedding the comment or transcription within the annotation. These additional features are described in the following section.  The use of advanced features sometimes results in situations where the resource is not an image, but instead a `SpecificResource`, a `Choice` or other non content object. Implementations should check the type of the resource and not assume that it is always an image.
 
 Only the annotations that associate images or parts of images are included in the canvas in the `images` property.  Other annotations, including both those that paint resources on the canvas and those that comment about the canvas, are included by referencing annotation lists, discussed in the following section.
 
@@ -900,7 +903,7 @@ Each annotation list _MAY_ be part of one or more layers. If the annotation list
 }
 ```
 
-The layer _MAY_ be able to be dereferenced if it has an HTTP URI.  If a representation is available, it _MUST_ follow all of the requirements for JSON representations in this specification.  All of the properties of the Layer _SHOULD_ be included in the representation.  
+The layer _MAY_ be able to be dereferenced if it has an HTTP URI.  If a representation is available, it _MUST_ follow all of the requirements for JSON representations in this specification.  All of the properties of the layer _SHOULD_ be included in the representation.  
 
 The annotation lists are referenced from the layer in an `otherContent` array, in the same way as they are referenced from a canvas.  The annotation lists _SHOULD_ be given as just URIs, but _MAY_ be objects with more information about them, such as in the [Canvas][canvas] example.
 
@@ -1386,7 +1389,7 @@ Alternatively, if the image is available via the IIIF Image API, it may be more 
 
 For annotations which are comments about the canvas, as opposed to painting content resources onto the canvas, there are different types of motivation to make the distinction clear. For annotations about the content (such as comments, notes, descriptions etc.) the `motivation` _SHOULD_ be "oa:commenting", but _MAY_ be any from the list given in the [Open Annotation][openanno] specification.
 
-Unlike painting annotations, comments or annotations with other motivations, _SHOULD_ have a URI assigned as their identity and provided in the `@id` property.  When dereferencing that URI, the representation of the annotation _SHOULD_ be returned.  This is to allow further annotations to annotate the comment, for example in order to reply to it, or to tag it for organizational or discovery purposes.
+Unlike painting annotations, comments or annotations with other motivations _SHOULD_ have a URI assigned as their identity and provided in the `@id` property.  When dereferencing that URI, the representation of the annotation _SHOULD_ be returned.  This is to allow further annotations to annotate the comment, for example in order to reply to it, or to tag it for organizational or discovery purposes.
 
 ``` json-doc
 {
@@ -1655,7 +1658,7 @@ URL: _http://example.org/iiif/book1/manifest_
     }
   ],
   "description": "A longer description of this example book. It should give some real information.",
-  "viewingDate": "1856-01-01T00:00:00Z",
+  "navDate": "1856-01-01T00:00:00Z",
 
   "license": "http://example.org/license.html",
   "attribution": "Provided by Example Organization",
@@ -1814,7 +1817,7 @@ URL: _http://example.org/iiif/book1/manifest_
 
  * Clients _SHOULD_ be aware that some implementations may add an `@graph` property at the top level, which contains the object. This is a side effect of JSON-LD serialization, and servers _SHOULD_ remove it before sending to the client. If this is seen in practice, the client can use the [JSON-LD compaction algorithm][json-ld-compact] and JSON-LD Framing with the [supplied frames][annex-frames] to remove it and generate the correct representation.
 
- * If a {name} parameter in the recommended URI structure begins with a number, such as `.../canvas/1`, then developers using certain technology stacks may be inconvenienced.  In particular, an RDF based stack that uses RDF/XML internally will not be able to derive a shared `.../canvas/` prefix and then use the `1` as a CURIE, as `<canvas:1>` is not a valid element in XML.  Producers might consider adding an alphabetical character as the initial character. 
+ * If a {name} parameter in the recommended URI structure begins with a number, such as `.../canvas/1`, then developers using certain technology stacks may be inconvenienced.  In particular, an RDF based stack that uses RDF/XML internally will not be able to derive a shared `.../canvas/` prefix and then use the `1` as a CURIE, as `<canvas:1>` is not a valid element in XML.  Producers might consider adding an alphabetical character as the initial character.
 
 
 ### E. Versioning
@@ -1825,16 +1828,16 @@ Starting with version 2.0, this specification follows [Semantic Versioning][semv
 
 The production of this document was generously supported by a grant from the [Andrew W. Mellon Foundation][mellon].
 
-Many thanks to Matthieu Bonicel, Tom Cramer, Ian Davis, Markus Enders, Renhart Gittens, Tim Gollins, Antoine Isaac, Neil Jefferies, Sean Martin, Roger Mathisen, Mark Patton, Petter Rønningsen, Raphael Schwemmer and Stuart Snydman for their thoughtful contributions. Thanks also to the members of the [IIIF][iiif-community] for their continuous engagement, innovative ideas and feedback.
+Many thanks to the members of the [IIIF][iiif-community] for their continuous engagement, innovative ideas and feedback.
 
 ### G. Change Log
 
-| Date       | Description                                        |
-| ---------- | -------------------------------------------------- |
-| 2016-02-26 | Version 2.1.0-draft5 (Hinty McHintface) [View change log][change-log] |
+| Date       | Description           |
+| ---------- | --------------------- |
+| 2016-05-12 | Version 2.1 (Hinty McHintface) [View change log][change-log] |
 | 2014-09-11 | Version 2.0 (Triumphant Giraffe) [View change log][change-log-20] |
-| 2013-08-26 | Version 1.0 (unnamed) released                     |
-| 2013-06-14 | Version 0.9 (unnamed) released                     |
+| 2013-08-26 | Version 1.0 (unnamed) |
+| 2013-06-14 | Version 0.9 (unnamed) |
 
 [iiif-discuss]: mailto:iiif-discuss@googlegroups.com "Email Discussion List"
 [shared-canvas]: /model/shared-canvas/{{ site.shared_canvas.latest.major}}.{{ site.shared_canvas.latest.minor }} "Shared Canvas Data Model"
@@ -1872,7 +1875,7 @@ Many thanks to Matthieu Bonicel, Tom Cramer, Ian Davis, Markus Enders, Renhart G
 [stable-version]: /api/presentation/{{ site.presentation_api.latest.major }}.{{ site.presentation_api.latest.minor }}/
 [appendixa]: #a-summary-of-recommended-uri-patterns "Appendix A"
 [appendixb]: #b-summary-of-metadata-requirements "Appendix B"
-[prev-version]: /api/metadata/1.0/
+[prev-version]: /api/presentation/2.0/
 [sequence]: #sequence
 [canvas]: #canvas
 [range]: #range
