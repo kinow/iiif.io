@@ -680,7 +680,7 @@ For some objects, there may be more than just images available to represent the 
 
 The {name} parameter in the URI pattern _MUST_ uniquely distinguish it from all other lists, and is typically the same name as the canvas. As a single canvas may have multiple lists of additional resources, perhaps divided by type, this _MUST NOT_ be assumed however, and the URIs must be followed rather than constructed _a priori_. As with other uses of the {name} parameter, it _SHOULD NOT_ begin with a number.
 
-The annotation list _MUST_ have an http(s) URI given in `@id`, and the the JSON representation _MUST_ be returned when that URI is dereferenced.  They _MAY_ have any of the other fields defined in this specification.
+The annotation list _MUST_ have an http(s) URI given in `@id`, and the JSON representation _MUST_ be returned when that URI is dereferenced.  They _MAY_ have any of the other fields defined in this specification.
 
 The list of resource associations are given in a `resources` list. The items in the list are annotations, as described above, however the resource linked by the annotation is something other than an image. The canvas URI _MUST_ be repeated in the `on` field, as above.
 
