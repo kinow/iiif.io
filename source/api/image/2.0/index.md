@@ -381,7 +381,7 @@ Examples:
 
 The sequence of parameters in the URI is intended as a mnemonic for the order in which image manipulations are made against the full image content. This is important to consider when implementing the service because applying the same parameters in a different sequence will often result in a different image being delivered. The order is critical so that the application calling the service reliably receives the output it expects.
 
-The parameters should be interpreted as if the the sequence of image manipulations were:
+The parameters should be interpreted as if the sequence of image manipulations were:
 
 `Region THEN Size THEN Rotation THEN Quality THEN Format`
 
