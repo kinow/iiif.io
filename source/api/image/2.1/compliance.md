@@ -123,7 +123,7 @@ Link: <http://iiif.io/api/image/{{ page.major }}/level1.json>;rel="profile"
 ```
 {: .urltemplate}
 
-The URIs for the the compliance levels are as follows:
+The URIs for the compliance levels are as follows:
 
 | Level | URI                                                   |
 |:-----:|:------------------------------------------------------|
